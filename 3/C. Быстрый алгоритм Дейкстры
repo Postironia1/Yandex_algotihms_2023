@@ -1,1 +1,75 @@
 
+#include<iostream>
+#include <vector>
+#include <limits>
+#include <queue>
+#include <fstream>
+
+const long long INF = std::numeric_limits<long long>::max();
+
+
+long long dijkstra(const std::vector<std::vector<std::pair<long long, long long>>>& matrix, long long N, long long S, long long F) {
+
+    if (S == F) { 
+        return  0;  
+    }
+
+    std::vector<long long> dist(N + 1, INF);
+    dist[S] = 0;
+
+    std::vector<bool> visited(N + 1, false);
+
+    std::priority_queue<std::pair<long long, long long>, std::vector<std::pair<long long, long long>>, std::greater<std::pair<long long, long long>>> pq;
+
+    pq.push({ 0, S });
+
+    while (!pq.empty()) {
+
+        int min_vex = pq.top().second;
+        pq.pop();
+        if (visited[min_vex])
+            continue;
+
+        visited[min_vex] = true;
+
+        for (const auto& v : matrix[min_vex]) {
+            long long next = v.first;
+            long long weight = v.second;
+            if (dist[min_vex] + weight < dist[next]) {
+                dist[next] = dist[min_vex] + weight;
+                pq.push({ dist[next], next });
+            }
+        }
+    }
+
+    if (!visited[F]) {
+        return -1;
+    }
+    else {
+        return dist[F];
+    }
+}
+
+int main() {
+
+    std::ifstream input("input.txt");
+
+    long long N, K;
+    input >> N >> K;
+
+    std::vector<std::vector<std::pair<long long, long long>>> graph(N + 1);
+
+    for (int i = 0; i < K; ++i) {
+        int a, b, l;
+        input >> a >> b >> l;
+        graph[a].push_back({b, l});
+        graph[b].push_back({a, l});
+    }
+
+    long long A, B;
+    input >> A >> B;
+
+    std::cout << dijkstra(graph, N, A, B);
+
+    return 0;
+}
