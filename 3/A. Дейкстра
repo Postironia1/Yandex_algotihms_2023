@@ -1,0 +1,67 @@
+#include<iostream>
+#include <vector>
+#include <limits>
+
+const int INF = std::numeric_limits<int>::max();
+
+
+void dijkstra(const std::vector<std::vector<int>>& matrix, int N, int S, int F) {
+
+    std::vector<int> dist(N + 1, INF);
+    dist[S] = 0;
+
+    std::vector<bool> visited(N + 1, false);
+    
+    for (int i = 1; i < N; ++i) {
+
+        int min_dist = INF;
+        int min_vex = -1;
+
+        for (int j = 1; j < N + 1; ++j) {
+            if (!visited[j] && dist[j] < min_dist) {
+                min_dist = dist[j];
+                min_vex = j;
+            }
+        }
+
+        if (min_vex == -1)
+            break;
+
+        visited[min_vex] = true;
+
+        for (int j = 1; j < N + 1; ++j) {
+            if (!visited[j] && matrix[min_vex][j] != -1 && 
+               (dist[min_vex] + matrix[min_vex][j] < dist[j]) && 
+                dist[min_vex] != INF) {               
+                    dist[j] = matrix[min_vex][j] + dist[min_vex];
+            }
+        }
+
+
+    }
+
+    if (dist[F] == INF) {
+        std::cout << -1 << std::endl;
+    }
+    else {
+        std::cout << dist[F] << std::endl;
+    }
+}
+
+int main() {
+
+    int N, S, F;
+    std::cin >> N >> S >> F;
+
+    std::vector<std::vector<int>> matrix(N + 1, std::vector<int>(N + 1));
+
+    for (int i = 1; i < N + 1; ++i) {
+        for (int j = 1; j < N + 1; ++j) {
+            std::cin >> matrix[i][j];
+        }
+    }
+
+    dijkstra(matrix, N, S, F);
+
+    return 0;
+}
