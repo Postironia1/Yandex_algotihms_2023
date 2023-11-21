@@ -1,0 +1,34 @@
+void dijkstra(const std::vector<std::vector<std::pair<int, long long>>>& matrix, std::vector<long long>& dist, std::vector<bool>& visited, int start) {
+    std::priority_queue<std::pair<long long, long long>, std::vector<std::pair<long long, long long>>, std::greater<std::pair<long long, long long>>> pq;
+    pq.push({ 0, start });
+
+    while (!pq.empty()) {
+        int min_vex = pq.top().second;
+        pq.pop();
+
+        if (visited[min_vex])
+            continue;
+
+        visited[min_vex] = true;
+
+        bool isEndOfBranch = true;  // Предполагаем, что вершина - крайняя в ветке
+
+        for (const auto& v : matrix[min_vex]) {
+            long long next = v.first;
+            long long weight = v.second;
+
+            if (!visited[next]) {
+                isEndOfBranch = false;  // Если есть непосещенный сосед, то это не крайняя вершина
+                if (dist[min_vex] + weight < dist[next]) {
+                    dist[next] = dist[min_vex] + weight;
+                    pq.push({ dist[next], next });
+                }
+            }
+        }
+
+        // Если вершина - крайняя в ветке (все её соседи посещены), не помечаем её как посещенную
+        if (isEndOfBranch) {
+            visited[min_vex] = false;
+        }
+    }
+}
