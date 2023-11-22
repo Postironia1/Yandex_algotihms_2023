@@ -1,0 +1,48 @@
+#include <iostream>
+#include <vector>
+
+template <typename RandomIt, typename Comp>
+void QuickSort(RandomIt first, RandomIt last, Comp comp) {
+	if (last - first <= 1) return;
+
+	RandomIt pivot = (first + std::distance(first, last) / 2);
+
+	RandomIt left = first;
+	RandomIt right = last - 1;
+
+	for (; left <= right;) {
+		for (; comp(*left, *pivot); left++) {}
+
+		for (; comp(*pivot, *right); right--) {}
+
+		if (left <= right) {
+			std::swap(*left, *right);
+			left++;
+			right--;
+		}
+	}
+
+	if (first < right) QuickSort(first, right + 1, comp);
+
+	if (left < last) QuickSort(left, last, comp);
+}
+
+int main() {
+    long N;
+    std::cin >> N;
+
+    std::vector<long long> vec(N);
+    for (auto i = 0; i < N; ++i) {
+        std::cin >> vec[i];
+    }
+
+    auto lessThan = [](auto a, auto b) { return a < b; };
+
+    QuickSort(vec.begin(), vec.end(), lessThan);
+
+    for (const int& num : vec) {
+        std::cout << num << " ";
+    }
+
+    return 0;
+}
