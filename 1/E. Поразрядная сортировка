@@ -1,0 +1,70 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+//Это такой странный вариант RadixSort'a
+
+void printArray(const std::vector<std::string>& arr) {
+    if (arr.empty()) 
+        std::cout << "empty"; 
+    else {
+        for (auto i = 0; i < arr.size(); ++i) {
+            if (i == arr.size() - 1)
+                std::cout << arr[i];
+
+            else
+                std::cout << arr[i] << ", ";
+
+        }
+    }   
+    std::cout << std::endl;
+}
+
+void cringeRadixSortOrBucketSort(std::vector<std::string>& arr) {
+    const int n = arr.size();
+    const int maxStringLength = arr[0].length();
+    const int numBuckets = 10;  
+    std::vector<std::vector<std::string>> buckets(numBuckets);
+
+    std::cout << "Initial array:" << std::endl;
+    printArray(arr);
+    std::cout << "**********" << std::endl;
+
+    for (int phase = maxStringLength - 1; phase >= 0; phase--) {
+        for (const std::string& s : arr) {
+            int bucketIndex = s[phase] - '0';
+            buckets[bucketIndex].push_back(s);
+        }
+
+        std::cout << "Phase " << maxStringLength - phase << std::endl;
+        for (int i = 0; i < numBuckets; i++) {
+            std::cout << "Bucket " << i << ": ";
+            printArray(buckets[i]);
+        }
+
+        arr.clear();
+
+        for (int i = 0; i < numBuckets; i++) {
+            arr.insert(arr.end(), buckets[i].begin(), buckets[i].end());
+            buckets[i].clear();
+        }
+        std::cout << "**********" << std::endl;
+    }
+}
+
+int main() {
+    int n;
+    std::cin >> n;
+    std::vector<std::string> arr(n);
+
+    for (int i = 0; i < n; i++) {
+        std::cin >> arr[i];
+    }
+
+    cringeRadixSortOrBucketSort(arr);
+
+    std::cout << "Sorted array:" << std::endl;
+    printArray(arr);
+
+    return 0;
+}
