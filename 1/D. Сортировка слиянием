@@ -1,0 +1,60 @@
+#include <iostream>
+#include <vector>
+
+
+template <typename RandomIt>
+void Merge(RandomIt first, RandomIt middle, RandomIt last) {
+    using value_type = typename std::iterator_traits<RandomIt>::value_type;
+    std::vector<value_type> tmp(std::distance(first, last));
+    RandomIt left = first, right = middle;
+    auto tmp_it = tmp.begin();
+
+    for (; left < middle && right < last; ) {
+        if (*left < *right) {
+            *tmp_it = *left;
+            ++left;
+        } else {
+            *tmp_it = *right;
+            ++right;
+        }
+        ++tmp_it;
+    }
+
+    tmp_it = std::copy(left, middle, tmp_it);
+    tmp_it = std::copy(right, last, tmp_it);
+    std::copy(tmp.begin(), tmp.end(), first);
+}
+
+
+template <typename RandomIt>
+void MergeSort(RandomIt first, RandomIt last) {
+    const size_t size = std::distance(first, last);
+    if (size < 2) {
+        return;
+    }
+
+    RandomIt middle = first + size / 2;
+    MergeSort(first, middle);
+    MergeSort(middle, last);
+    Merge(first, middle, last);
+}
+
+int main() {
+	int N;
+    std::cin >> N;
+    
+    std::vector<long long> arr (N);
+    
+    for (auto i = 0; i < N; ++i) {
+    	std::cin >> arr[i];
+    }
+
+    MergeSort(arr.begin(), arr.end());
+
+    for (const int& num : arr) {
+        std::cout << num << " ";
+    }
+    std::cout << std::endl;
+
+    return 0;
+}
