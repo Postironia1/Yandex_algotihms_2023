@@ -1,1 +1,119 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+#include<string>
 
+typedef std::pair<int, int> node;
+typedef std::tuple<double, int, int, std::vector<int>> pq_elem;
+typedef std::vector<std::vector<node>> graph;
+
+int main()
+{
+	int n;
+
+	std::cin >> n;
+
+	std::vector<int> times(n);
+	std::vector<int> speeds(n);
+
+	for (int i = 0; i < n; i++)
+	{
+		std::cin >> times[i] >> speeds[i];
+	}
+
+	graph graph(n, std::vector<node>());
+
+	for (int i = 0; i < n - 1; i++)
+	{
+		int a, b, w;
+
+		std::cin >> a >> b >> w;
+		--a; --b;
+
+		graph[a].push_back({ b, w });
+		graph[b].push_back({ a, w });
+	}
+
+	double ans = 0;
+	std::vector<int> dist(n, 0);
+	std::vector<int> v_ans;
+	for (int i = 1; i < n; i++)
+	{
+		std::priority_queue<pq_elem, std::vector<pq_elem>, std::greater<pq_elem>>  q;
+
+		std::vector<int> visited(n, -1);
+
+
+		q.push({ 0, 0, i , std::vector<int>() });
+
+		while (!q.empty())
+		{
+			auto front = q.top();
+			q.pop();
+
+			int index;
+			int speed;
+			double time;
+			std::vector<int> visit;
+
+			std::tie(time, speed, index, visit) = front;
+
+			auto can_swap = false;
+
+			if (visited[index] == -1)
+			{
+				can_swap = true;
+			}
+
+			if (visited[index] >= speed)
+			{
+				continue;
+			}
+
+			visited[index] = speed;
+
+			if (index == 0)
+			{
+				dist[i] = time;
+				if (time > ans)
+				{
+					ans = time;
+					v_ans = visit;
+				}
+				break;
+			}
+
+			for (auto u : graph[index])
+			{
+
+				if (speed != 0 && visited[u.first] < speed)
+				{
+					double add_time = ((double)u.second / speed);
+					auto new_v = std::vector<int>(visit);
+					q.push({ time + add_time, speed, u.first, new_v });
+				}
+
+				if (can_swap && speeds[index] > speed)
+				{
+					double add_time = ((double)u.second / speeds[index]) + times[index];
+					auto new_v = std::vector<int>(visit);
+					new_v.push_back(index);
+					q.push({ time + add_time, speeds[index], u.first, new_v });
+				}
+			}
+
+
+		}
+
+
+	}
+	std::cout << std::to_string(ans) << std::endl;;
+
+	for (auto v : v_ans)
+	{
+		std::cout << v + 1 << ' ';
+	}
+
+	std::cout << 1 << std::endl;;
+
+}
